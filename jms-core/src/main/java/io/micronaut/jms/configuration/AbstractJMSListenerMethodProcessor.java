@@ -20,6 +20,7 @@ import io.micronaut.context.processor.ExecutableMethodProcessor;
 import io.micronaut.core.annotation.AnnotationValue;
 import io.micronaut.core.bind.BoundExecutable;
 import io.micronaut.core.bind.DefaultExecutableBinder;
+import io.micronaut.core.bind.exceptions.UnsatisfiedArgumentException;
 import io.micronaut.core.type.Argument;
 import io.micronaut.inject.BeanDefinition;
 import io.micronaut.inject.ExecutableMethod;
@@ -114,16 +115,27 @@ public abstract class AbstractJMSListenerMethodProcessor<T extends Annotation>
                                                     boolean acknowledge) {
 
         return message -> executor.submit(() -> {
-            BoundExecutable boundExecutable = binder.bind(method, jmsArgumentBinderRegistry, message);
-            boundExecutable.invoke(bean);
-            if (acknowledge) {
-                try {
-                    message.acknowledge();
-                } catch (JMSException e) {
-                    logger.error("Failed to acknowledge receipt of message with the broker. " +
-                        "This message may be falsely retried.", e);
-                    throw new MessageAcknowledgementException(e.getMessage(), e);
+            BoundExecutable boundExecutable = null;
+            try {
+                boundExecutable = binder.bind(method, jmsArgumentBinderRegistry, message);
+            } catch (UnsatisfiedArgumentException e) {
+
+            }
+            try {
+                if (boundExecutable != null) {
+                    boundExecutable.invoke(bean);
                 }
+                if (acknowledge) {
+                    try {
+                        message.acknowledge();
+                    } catch (JMSException e) {
+                        logger.error("Failed to acknowledge receipt of message with the broker. " +
+                                "This message may be falsely retried.", e);
+                        throw new MessageAcknowledgementException(e.getMessage(), e);
+                    }
+                }
+            } catch (Throwable e) {
+
             }
         });
     }

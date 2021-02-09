@@ -27,6 +27,7 @@ import io.micronaut.inject.ExecutableMethod;
 import io.micronaut.inject.qualifiers.Qualifiers;
 import io.micronaut.jms.annotations.JMSListener;
 import io.micronaut.jms.bind.JMSArgumentBinderRegistry;
+import io.micronaut.jms.exception.JMSExceptionHandler;
 import io.micronaut.jms.listener.JMSListenerContainerFactory;
 import io.micronaut.jms.model.JMSDestinationType;
 import io.micronaut.jms.pool.JMSConnectionPool;
@@ -63,13 +64,16 @@ public abstract class AbstractJMSListenerMethodProcessor<T extends Annotation>
 
     private final DefaultExecutableBinder<Message> binder = new DefaultExecutableBinder<>();
     private final JMSArgumentBinderRegistry jmsArgumentBinderRegistry;
+    private final JMSExceptionHandler exceptionHandler;
     private final Class<T> clazz;
 
     protected AbstractJMSListenerMethodProcessor(BeanContext beanContext,
                                                  JMSArgumentBinderRegistry registry,
+                                                 JMSExceptionHandler exceptionHandler,
                                                  Class<T> clazz) {
         this.beanContext = beanContext;
         this.jmsArgumentBinderRegistry = registry;
+        this.exceptionHandler = exceptionHandler;
         this.clazz = clazz;
     }
 
@@ -135,7 +139,7 @@ public abstract class AbstractJMSListenerMethodProcessor<T extends Annotation>
                     }
                 }
             } catch (Throwable e) {
-
+                exceptionHandler.handle(new io.micronaut.jms.exception.JMSException(e));
             }
         });
     }

@@ -15,7 +15,6 @@
  */
 package io.micronaut.jms.bind;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.core.bind.ArgumentBinder;
 import io.micronaut.core.bind.ArgumentBinderRegistry;
 import io.micronaut.core.bind.annotation.AbstractAnnotatedArgumentBinder;

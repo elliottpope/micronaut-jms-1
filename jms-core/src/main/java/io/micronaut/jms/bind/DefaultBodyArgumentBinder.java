@@ -17,7 +17,6 @@ package io.micronaut.jms.bind;
 
 import io.micronaut.core.convert.ArgumentConversionContext;
 import io.micronaut.core.convert.ConversionService;
-import io.micronaut.jms.serdes.DefaultSerializerDeserializer;
 import io.micronaut.jms.serdes.Deserializer;
 import io.micronaut.messaging.annotation.Body;
 

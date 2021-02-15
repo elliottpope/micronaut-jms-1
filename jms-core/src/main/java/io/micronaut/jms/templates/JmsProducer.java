@@ -20,7 +20,6 @@ import io.micronaut.core.util.ArgumentUtils;
 import io.micronaut.jms.model.JMSDestinationType;
 import io.micronaut.jms.model.MessageHeader;
 import io.micronaut.jms.pool.JMSConnectionPool;
-import io.micronaut.jms.serdes.DefaultSerializerDeserializer;
 import io.micronaut.jms.serdes.Serializer;
 import io.micronaut.messaging.exceptions.MessageListenerException;
 import io.micronaut.messaging.exceptions.MessagingClientException;
@@ -28,7 +27,12 @@ import io.micronaut.messaging.exceptions.MessagingSystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.*;
+import javax.jms.Connection;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageProducer;
+import javax.jms.Session;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 

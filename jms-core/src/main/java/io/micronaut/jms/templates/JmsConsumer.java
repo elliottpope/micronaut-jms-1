@@ -19,7 +19,6 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import io.micronaut.jms.model.JMSDestinationType;
 import io.micronaut.jms.pool.JMSConnectionPool;
-import io.micronaut.jms.serdes.DefaultSerializerDeserializer;
 import io.micronaut.jms.serdes.Deserializer;
 import io.micronaut.messaging.exceptions.MessageListenerException;
 import io.micronaut.messaging.exceptions.MessagingSystemException;

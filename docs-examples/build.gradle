@@ -13,7 +13,6 @@ subprojects { Project subproject ->
 
     dependencies {
         compileOnly 'org.graalvm.nativeimage:svm'
-        testImplementation project(':jms-test')
         testImplementation project(':jms-activemq-classic')
         testImplementation 'io.micronaut.reactor:micronaut-reactor'
     }

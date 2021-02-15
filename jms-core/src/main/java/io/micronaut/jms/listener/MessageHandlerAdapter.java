@@ -15,7 +15,6 @@
  */
 package io.micronaut.jms.listener;
 
-import io.micronaut.jms.serdes.DefaultSerializerDeserializer;
 import io.micronaut.jms.serdes.Deserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

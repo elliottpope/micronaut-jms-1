@@ -96,10 +96,8 @@ public class JMSProducerMethodInterceptor implements MethodInterceptor<Object, O
             .orElseThrow(() -> new ConfigurationException(
                 "One method argument must be annotated with @Body"));
 
-        String serializerName = method.stringValue(annotationType, "serializer").orElse(null);
-        Serializer<?> serializer = serializerName == null
-            ? DefaultSerializerDeserializer.getInstance()
-            : beanContext.getBean(Serializer.class, Qualifiers.byName(serializerName));
+        String serializerName = method.stringValue(annotationType, "serializer").orElse("default-serializer-deserializer");
+        Serializer<?> serializer = beanContext.getBean(Serializer.class, Qualifiers.byName(serializerName));
 
         MessageHeader[] headers = Arrays.stream(method.getArguments())
             .filter(arg -> arg.isDeclaredAnnotationPresent(Header.class))

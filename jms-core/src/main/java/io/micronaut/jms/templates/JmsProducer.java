@@ -57,12 +57,6 @@ public class JmsProducer<T> {
     private final boolean sessionTransacted;
     private final int sessionAcknowledgeMode;
 
-    @SuppressWarnings("unchecked")
-    public JmsProducer(JMSDestinationType type,
-                       JMSConnectionPool connectionPool) {
-        this(type, connectionPool, (Serializer<T>) DefaultSerializerDeserializer.getInstance());
-    }
-
     public JmsProducer(JMSDestinationType type,
                        JMSConnectionPool connectionPool,
                        Serializer<T> serializer) {

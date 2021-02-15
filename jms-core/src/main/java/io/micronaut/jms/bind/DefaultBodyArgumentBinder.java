@@ -18,6 +18,7 @@ package io.micronaut.jms.bind;
 import io.micronaut.core.convert.ArgumentConversionContext;
 import io.micronaut.core.convert.ConversionService;
 import io.micronaut.jms.serdes.DefaultSerializerDeserializer;
+import io.micronaut.jms.serdes.Deserializer;
 import io.micronaut.messaging.annotation.Body;
 
 import javax.jms.Message;
@@ -31,20 +32,23 @@ import java.util.Optional;
  */
 public class DefaultBodyArgumentBinder extends AbstractJmsArgumentBinder<Body> {
 
+    private final Deserializer deserializer;
+
     /**
      * Constructor.
      *
      * @param conversionService conversionService
+     * @param deserializer deserializer to be used to convert the message body to a plain Java object.
      */
-    public DefaultBodyArgumentBinder(ConversionService<?> conversionService) {
+    public DefaultBodyArgumentBinder(ConversionService<?> conversionService, Deserializer deserializer) {
         super(conversionService);
+        this.deserializer = deserializer;
     }
 
     @Override
     public BindingResult<Object> bind(ArgumentConversionContext<Object> context,
                                       Message source) {
-        return () -> Optional.of(DefaultSerializerDeserializer.getInstance().deserialize(
-            source, context.getArgument().getType()));
+        return () -> Optional.of(deserializer.deserialize(source, context.getArgument().getType()));
     }
 
     @Override

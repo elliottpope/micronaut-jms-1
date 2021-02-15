@@ -21,6 +21,8 @@ import io.micronaut.jms.model.MessageType;
 import io.micronaut.messaging.exceptions.MessageListenerException;
 import io.micronaut.messaging.exceptions.MessagingClientException;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
@@ -43,22 +45,21 @@ import java.util.Map;
  *
  * For deserialization, it will attempt to determine the type of the contained message from the JMS message type and then cast
  *  it to the expected class. If the provided {@link Message} is a {@link TextMessage} and the expected class is not a
- *  {@link String} then it will assume the message is a JSON format and will attempt to read the message as a JSON object.
+ *  {@link String} then it will assume the message is JSON formatted string and will attempt to read the message as a JSON object.
  *
  * @author Elliott Pope
  * @since 1.0.0
  */
+@Singleton
+@Named("default-serializer-deserializer")
+// TODO: add conditional on Serializer/Deserializer not present
 public final class DefaultSerializerDeserializer implements Serializer<Object>, Deserializer {
 
     private static final String OBJECT_MESSAGE_TYPE_PROPERTY = "MICRONAUT_SERDES_TYPE";
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    private static final DefaultSerializerDeserializer INSTANCE = new DefaultSerializerDeserializer();
+    private final ObjectMapper objectMapper;
 
-    private DefaultSerializerDeserializer() {
-    }
-
-    public static DefaultSerializerDeserializer getInstance() {
-        return INSTANCE;
+    public DefaultSerializerDeserializer(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -103,7 +104,7 @@ public final class DefaultSerializerDeserializer implements Serializer<Object>, 
         if (clazz.isAssignableFrom(String.class)) {
             return (T) message.getText();
         }
-        return OBJECT_MAPPER.readValue(message.getText(), clazz);
+        return objectMapper.readValue(message.getText(), clazz);
     }
 
     private <T> T deserializeBytes(final BytesMessage message) throws JMSException {
@@ -127,7 +128,7 @@ public final class DefaultSerializerDeserializer implements Serializer<Object>, 
             // if it was serialized to JSON, deserialize as the requested type
             String serdesType = message.getStringProperty(OBJECT_MESSAGE_TYPE_PROPERTY);
             if (serdesType != null) {
-                return OBJECT_MAPPER.readValue((String) body, clazz);
+                return objectMapper.readValue((String) body, clazz);
             }
         }
 
@@ -141,7 +142,7 @@ public final class DefaultSerializerDeserializer implements Serializer<Object>, 
             String serdesType = null;
             if (!(body instanceof Serializable)) {
                 serdesType = body.getClass().getName();
-                body = OBJECT_MAPPER.writeValueAsString(body);
+                body = objectMapper.writeValueAsString(body);
             }
             switch (MessageType.fromObject(body)) {
                 case MAP:
@@ -195,7 +196,7 @@ public final class DefaultSerializerDeserializer implements Serializer<Object>, 
 
     private ObjectMessage serializeObject(final Session session,
                                           final Serializable body) throws JMSException, JsonProcessingException {
-        ObjectMessage message = session.createObjectMessage(OBJECT_MAPPER.writeValueAsString(body));
+        ObjectMessage message = session.createObjectMessage(objectMapper.writeValueAsString(body));
         message.setStringProperty(OBJECT_MESSAGE_TYPE_PROPERTY, body.getClass().getName());
         return message;
     }

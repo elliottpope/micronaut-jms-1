@@ -52,11 +52,6 @@ public class JmsConsumer {
     private final int sessionAcknowledgeMode;
 
     public JmsConsumer(JMSDestinationType type,
-                       JMSConnectionPool connectionPool) {
-        this(type, connectionPool, DefaultSerializerDeserializer.getInstance());
-    }
-
-    public JmsConsumer(JMSDestinationType type,
                        JMSConnectionPool connectionPool,
                        Deserializer deserializer) {
         this(type, connectionPool, deserializer, false, AUTO_ACKNOWLEDGE);

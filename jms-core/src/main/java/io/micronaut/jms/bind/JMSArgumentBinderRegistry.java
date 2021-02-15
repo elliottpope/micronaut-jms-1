@@ -15,6 +15,7 @@
  */
 package io.micronaut.jms.bind;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.core.bind.ArgumentBinder;
 import io.micronaut.core.bind.ArgumentBinderRegistry;
 import io.micronaut.core.bind.annotation.AbstractAnnotatedArgumentBinder;
@@ -22,6 +23,7 @@ import io.micronaut.core.bind.annotation.Bindable;
 import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.order.OrderUtil;
 import io.micronaut.core.type.Argument;
+import io.micronaut.jms.serdes.Deserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,8 +51,8 @@ public class JMSArgumentBinderRegistry implements ArgumentBinderRegistry<Message
 
     private final List<AbstractAnnotatedArgumentBinder<?, ?, Message>> binders = new LinkedList<>();
 
-    public JMSArgumentBinderRegistry(ConversionService<?> conversionService) {
-        registerArgumentBinder(new DefaultBodyArgumentBinder(conversionService));
+    public JMSArgumentBinderRegistry(ConversionService<?> conversionService, Deserializer deserializer) {
+        registerArgumentBinder(new DefaultBodyArgumentBinder(conversionService, deserializer));
         registerArgumentBinder(new DefaultHeaderArgumentBinder(conversionService));
         registerArgumentBinder(new DefaultMessageArgumentBinder(conversionService));
     }

@@ -91,9 +91,11 @@ public class JmsProducer<T> {
                      @NonNull T body,
                      MessageHeader... headers) {
 
+        String joinedHeaders = "";
         if (LOGGER.isDebugEnabled()) {
+            joinedHeaders = Arrays.stream(headers).map(MessageHeader::toString).collect(Collectors.joining(","));
             LOGGER.debug("Sending message {} to destination {} of type {} with headers [{}]",
-                    body, destination, type.name(), Arrays.stream(headers).map(MessageHeader::toString).collect(Collectors.joining(",")));
+                    body, destination, type.name(), joinedHeaders);
         }
         try (Connection connection = connectionPool.createConnection();
              Session session = createSession(connection)) {
@@ -101,7 +103,7 @@ public class JmsProducer<T> {
                 serializer.serialize(session, body), headers);
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Sent message {} to destination {} of type {} with headers [{}]",
-                        body, destination, type.name(), Arrays.stream(headers).map(MessageHeader::toString).collect(Collectors.joining(",")));
+                        body, destination, type.name(), joinedHeaders);
             }
         } catch (JMSException | RuntimeException e) {
             throw new MessagingClientException("Problem sending message to " + destination, e);
@@ -119,16 +121,18 @@ public class JmsProducer<T> {
     public void send(@NonNull String destination,
                      @NonNull Message message,
                      MessageHeader... headers) {
+        String joinedHeaders = "";
         if (LOGGER.isDebugEnabled()) {
+            joinedHeaders = Arrays.stream(headers).map(MessageHeader::toString).collect(Collectors.joining(","));
             LOGGER.debug("Sending message {} to destination {} of type {} with headers [{}]",
-                    message, destination, type.name(), Arrays.stream(headers).map(MessageHeader::toString).collect(Collectors.joining(",")));
+                    message, destination, type.name(), joinedHeaders);
         }
         try (Connection connection = connectionPool.createConnection();
              Session session = createSession(connection)) {
             send(session, lookupDestination(destination, session), message, headers);
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Sent message {} to destination {} of type {} with headers [{}]",
-                        message, destination, type.name(), Arrays.stream(headers).map(MessageHeader::toString).collect(Collectors.joining(",")));
+                        message, destination, type.name(), joinedHeaders);
             }
         } catch (JMSException | RuntimeException e) {
             throw new MessagingClientException("Problem sending message to " + destination, e);
@@ -149,16 +153,18 @@ public class JmsProducer<T> {
         ArgumentUtils.requireNonNull("destination", destination);
         ArgumentUtils.requireNonNull("message", message);
 
+        String joinedHeaders = "";
         if (LOGGER.isDebugEnabled()) {
+            joinedHeaders = Arrays.stream(headers).map(MessageHeader::toString).collect(Collectors.joining(","));
             LOGGER.debug("Sending message {} to destination {} of type {} with headers [{}]",
-                    message, destination.toString(), type.name(), Arrays.stream(headers).map(MessageHeader::toString).collect(Collectors.joining(",")));
+                    message, destination, type.name(), joinedHeaders);
         }
         try (Connection connection = connectionPool.createConnection();
              Session session = createSession(connection)) {
             send(session, destination, message, headers);
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Sent message {} to destination {} of type {} with headers [{}]",
-                        message, destination, type.name(), Arrays.stream(headers).map(MessageHeader::toString).collect(Collectors.joining(",")));
+                        message, destination, type.name(), joinedHeaders);
             }
         } catch (JMSException | RuntimeException e) {
             throw new MessagingClientException("Problem sending message ", e);

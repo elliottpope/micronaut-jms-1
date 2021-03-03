@@ -16,6 +16,8 @@
 package io.micronaut.jms.annotations;
 
 import io.micronaut.context.annotation.Executable;
+import io.micronaut.jms.listener.JMSListenerErrorHandler;
+import io.micronaut.jms.listener.JMSListenerSuccessHandler;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -114,4 +116,18 @@ public @interface Queue {
      * @see javax.jms.Session
      */
     boolean transacted() default false;
+
+    /***
+     * The success handlers to be injected into the message handling logic
+     * @return the classes of the success handlers to be added. These handlers must be present as {@link javax.inject.Singleton}
+     *  instances.
+     */
+    Class<? extends JMSListenerSuccessHandler>[] successHandlers() default {};
+
+    /***
+     * The error handlers to be injected into the message handling logic
+     * @return the classes of the error handlers to be added. These handlers must be present as {@link javax.inject.Singleton}
+     *  instances.
+     */
+    Class<? extends JMSListenerErrorHandler>[] errorHandlers() default {};
 }
